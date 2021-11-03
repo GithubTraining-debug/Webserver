@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<body >
+
+<form onsubmit="return myFunction()">
+    Name (max 20 characters): <input
+        type="text"
+        id="name"
+        size="20"
+        name="name"
+    ><br>
+    <input type="submit" value="Submit"> 
+</form>
+<ul id="movieList"></ul>
+
+<textarea id="userInput"></textarea>
+
+<button onclick="getAllMovieList(callGettAll); this.onclick = null">All movies</button>
+<button onclick="getAllMoviesByName(printy); this.onclick = null">Search</button>
+
+<script>
+var baseUrl = "http://localhost:9001"
+
+
+
+function getAllMoviesByName(callback) {
+    
+    
+    let textArea = document.getElementById("userInput")
+    getAll = baseUrl + "/movie?name=" + textArea.value;
+    
+    let xhr = new XMLHttpRequest();    
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            callback(xhr.response);
+        }
+    }
+
+    xhr.open("GET", getAll, true);
+    xhr.send(null)
+    
+}
+
+function printy(i) {
+    console.log(i)
+}
+
+function callGettAll(response) {
+    console.log(response)
+    res = JSON.parse(response)
+    let list = document.getElementById("movieList");
+    
+    res.forEach((item) => {
+        let li = document.createElement("li");
+        li.innerText =  "id: " + item.id + " name: " + item.name;
+        list.appendChild(li);
+    });
+}
+
+function getAllMovieList(callback) {
+
+    url = baseUrl + "/movies";
+    var xhr = new XMLHttpRequest();    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            callback(xhr.response);
+        }
+    }
+    xhr.open("GET", url, true);    
+    xhr.send(null)
+}
+
+function myFunction() {
+    url = baseUrl + "/movie"
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.setRequestHeader("Content-Type", "application/json");
+
+    var data = document.getElementById("name").value;
+    
+    xhr.send(JSON.stringify({
+        name: data
+    }));
+}
+</script>
+</body>
+</html>
