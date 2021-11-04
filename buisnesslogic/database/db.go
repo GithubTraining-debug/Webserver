@@ -14,7 +14,7 @@ func StartDB() (*sql.DB, error) {
 
 func connectionString() string {
 	const (
-		port     = 5432
+		port     = 8080
 		user     = "admin"
 		password = "abc123"
 		host     = "172.18.0.3"
