@@ -23,10 +23,14 @@ var baseUrl = "http://localhost:9001"
 
 
 
+
 function getAllMoviesByName(callback) {
     
-    
+    let textValue = (document.getElementById("userInput")).value
     let textArea = document.getElementById("userInput")
+    var hello =  'hello\nGoodbye\n'
+    console.log(textValue.split("\n"))
+    console.log(textValue, textArea)
     getAll = baseUrl + "/movie?name=" + textArea.value;
     
     let xhr = new XMLHttpRequest();    
