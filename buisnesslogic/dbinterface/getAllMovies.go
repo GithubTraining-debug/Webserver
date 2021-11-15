@@ -10,10 +10,12 @@ func GetAllMovies(db *sql.DB) ([]models.Movie, error) {
 	if err != nil {
 		return []models.Movie{}, err
 	}
+
 	rows, err := stmt.Query()
 	if err != nil {
 		return []models.Movie{}, err
 	}
+
 	defer rows.Close()
 
 	movies := []models.Movie{}
@@ -26,7 +28,6 @@ func GetAllMovies(db *sql.DB) ([]models.Movie, error) {
 		}
 		movies = append(movies, m)
 	}
-
 	return movies, err
 
 }
