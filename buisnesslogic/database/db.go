@@ -3,7 +3,9 @@ package database
 import (
 	"backend/dbinterface"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"os"
 
 	_ "github.com/lib/pq"
 )
@@ -12,36 +14,45 @@ func StartDB() (*sql.DB, error) {
 	return connectToDatabase()
 }
 
-func connectionString() string {
-	const (
-		port     = 5432
-		user     = "admin"
-		password = "abc123"
-		host     = "172.18.0.3"
-		dbname   = "postgres"
+func connectionString(s DBSettings) string {
+	fmt.Printf(
+		"port=%d host=%s user=%s password=%s dbname=%s sslmode=disable",
+		s.Port,
+		s.Host,
+		s.User,
+		s.Password,
+		s.DBname,
 	)
-
 	return fmt.Sprintf(
 		"port=%d host=%s user=%s password=%s dbname=%s sslmode=disable",
-		port,
-		host,
-		user,
-		password,
-		dbname,
+		s.Port,
+		s.Host,
+		s.User,
+		s.Password,
+		s.DBname,
 	)
 }
 
 func connectToDatabase() (*sql.DB, error) {
-	fmt.Println("getting connection")
-	db, err := sql.Open("postgres", connectionString())
-	if err != nil {
-		return nil, err
-	}
+	fmt.Println("getting connection to database")
 
+	settings := DBSettings{}
+	settingsBytes, err := os.ReadFile("Settings.json")
+	if err != nil {
+		return &sql.DB{}, fmt.Errorf("failed to read settingsfile Error: %s", err.Error())
+	}
+	err = json.Unmarshal(settingsBytes, &settings)
+	if err != nil {
+		return &sql.DB{}, fmt.Errorf("failed to parse settings Error: %s", err.Error())
+	}
+	db, err := sql.Open("postgres", connectionString(settings))
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to db Error: %s", err.Error())
+	}
 	setSchema := "SET SCHEMA 'tmdb';"
 	_, err = db.Exec(setSchema)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to Set Schema: %s", err.Error())
 	}
 	return db, nil
 }

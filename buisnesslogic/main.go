@@ -1,6 +1,7 @@
 package main
 
 import (
+	"backend/database"
 	"backend/logic/getallbyname"
 	"backend/logic/getallmovies"
 	"backend/logic/savemovie"
@@ -13,7 +14,7 @@ import (
 func backend() {
 	http.HandleFunc("/movie", handleMovieReq)
 	http.HandleFunc("/movies", getAllMovies)
-	http.ListenAndServe(":9001", nil)
+	http.ListenAndServe(":8900", nil)
 }
 
 func setupResponse(w *http.ResponseWriter, req *http.Request) {
@@ -41,7 +42,8 @@ func getAllMovies(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleMovieReq(w http.ResponseWriter, r *http.Request) {
-
+	fmt.Println("Innan response")
+	setupResponse(&w, r)
 	switch r.Method {
 	case "GET":
 		name := r.URL.Query()["name"][0]
@@ -82,6 +84,8 @@ func handleMovieReq(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 
-	backend()
-
+	//os.Setenv("DATABASEPATH", "172.0.0.0")
+	//fmt.Printf("os.Getenv(\"HELLO\"): %v\n", os.Getenv("HELLO"))
+	//backend()
+	database.StartDB()
 }
